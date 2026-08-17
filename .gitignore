@@ -1,9 +1,22 @@
 node_modules
 .next
+
 .env
 .env.local
+
 npm-debug.log*
 .DS_Store
 
 /generated/prisma
+
 dev.db
+dev.db.backup
+
+.agents
+.claude
+.windsurf
+
+data/skills
+skills-lock.json
+
+prisma/migrations-sqlite-backup
