@@ -1,0 +1,28 @@
+[
+  {
+    "id": "p-001",
+    "name": "انگشتر طلای کلاسیک",
+    "slug": "classic-gold-ring",
+    "weight": 2.35,
+    "karat": 18,
+    "laborPercent": 12,
+    "profitPercent": 7,
+    "taxPercent": 10,
+    "inventory": 3,
+    "manualPrice": null,
+    "active": true
+  },
+  {
+    "id": "p-002",
+    "name": "گردنبند طلای ظریف",
+    "slug": "delicate-gold-necklace",
+    "weight": 4.8,
+    "karat": 18,
+    "laborPercent": 15,
+    "profitPercent": 7,
+    "taxPercent": 10,
+    "inventory": 2,
+    "manualPrice": null,
+    "active": true
+  }
+]

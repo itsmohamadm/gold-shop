@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Product {
+  id            Int         @id @default(autoincrement())
+  name          String
+  category      String      @default("other")
+  weight        Float
+  karat         Int         @default(18)
+  laborPercent  Float       @default(20)
+  profitPercent Float       @default(7)
+  taxPercent    Float       @default(10)
+  manualPrice   Float?
+  stock         Int         @default(0)
+  active        Boolean     @default(true)
+  image         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+wishlists Wishlist[]
+
+  orderItems    OrderItem[]
+}
+
+model Order {
+  id            Int         @id @default(autoincrement())
+  orderNumber   String      @unique
+  customerName  String
+  phone         String
+  address       String
+  notes         String?
+  total         Float
+  status        String      @default("pending")
+
+  paymentStatus String      @default("unpaid")
+  paymentRef    String?
+  paidAt        DateTime?
+
+  customerId    Int?
+  customer      Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  items         OrderItem[]
+}
+
+model OrderItem {
+  id            Int         @id @default(autoincrement())
+  orderId       Int
+  productId     Int?
+  productName   String
+  unitPrice     Float
+  quantity      Int
+  weight        Float
+  karat         Int
+  subtotal      Float
+
+  order         Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product       Product?    @relation(fields: [productId], references: [id], onDelete: SetNull)
+}
+
+model Admin {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  value     String   @unique
+  label     String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Customer {
+  id           Int      @id @default(autoincrement())
+  name         String
+  phone        String   @unique
+  passwordHash String
+  address      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+wishlists Wishlist[]
+
+  orders       Order[]
+}
+
+model Wishlist {
+  id         Int      @id @default(autoincrement())
+  customerId Int
+  productId  Int
+  createdAt  DateTime @default(now())
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([customerId, productId])
+}
