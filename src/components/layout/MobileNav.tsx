@@ -7,11 +7,8 @@ type Props = {
   isAdmin: boolean;
 };
 
-export default function MobileNav({
-  isAdmin,
-}: Props) {
-  const [open, setOpen] =
-    useState(false);
+export default function MobileNav({ isAdmin }: Props) {
+  const [open, setOpen] = useState(false);
 
   function closeMenu() {
     setOpen(false);
@@ -22,17 +19,9 @@ export default function MobileNav({
       <button
         type="button"
         className="mobileMenuButton"
-        aria-label={
-          open
-            ? 'بستن منو'
-            : 'باز کردن منو'
-        }
+        aria-label={open ? 'بستن منو' : 'باز کردن منو'}
         aria-expanded={open}
-        onClick={() =>
-          setOpen(
-            (current) => !current
-          )
-        }
+        onClick={() => setOpen((current) => !current)}
       >
         {open ? '×' : '☰'}
       </button>
@@ -141,9 +130,7 @@ export default function MobileNav({
                 ورود
               </Link>
 
-              <span>
-                /
-              </span>
+              <span>/</span>
 
               <Link
                 href="/account/register"
@@ -152,6 +139,7 @@ export default function MobileNav({
                 ثبت‌نام
               </Link>
             </div>
+
           </div>
         </div>
       )}
