@@ -892,6 +892,40 @@ export default async function Shop({
               )}
             </div>
           )}
+
+          <div className="shopBenefits">
+            <div className="shopBenefit">
+              <div className="shopBenefitIcon">↩</div>
+              <div>
+                <strong>ضمانت بازگشت</strong>
+                <span>خرید با خیال راحت</span>
+              </div>
+            </div>
+
+            <div className="shopBenefit">
+              <div className="shopBenefitIcon">✓</div>
+              <div>
+                <strong>خرید و پرداخت امن</strong>
+                <span>پرداخت مطمئن و امن</span>
+              </div>
+            </div>
+
+            <div className="shopBenefit">
+              <div className="shopBenefitIcon">⚡</div>
+              <div>
+                <strong>تحویل اکسپرس</strong>
+                <span>ارسال سریع سفارش</span>
+              </div>
+            </div>
+
+            <div className="shopBenefit">
+              <div className="shopBenefitIcon">◆</div>
+              <div>
+                <strong>ضمانت اصل بودن کالا</strong>
+                <span>اصالت محصولات تضمین می‌شود</span>
+              </div>
+            </div>
+          </div>
         </section>
       </div>
     </main>
