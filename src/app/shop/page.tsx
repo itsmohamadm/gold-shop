@@ -10,7 +10,8 @@ import { prisma } from '@/lib/prisma';
 
 import ProductCard from '@/components/shop/ProductCard';
 
-export const dynamic = 'force-dynamic';
+export const dynamic =
+  'force-dynamic';
 
 type ShopProps = {
   searchParams: {
@@ -46,10 +47,13 @@ export default async function Shop({
   ]);
 
   const selectedCategory =
-    searchParams.category || 'all';
+    searchParams.category ||
+    'all';
 
   const searchQuery =
-    (searchParams.q || '').trim();
+    (
+      searchParams.q || ''
+    ).trim();
 
   const minPrice = Number(
     searchParams.minPrice || 0
@@ -68,18 +72,13 @@ export default async function Shop({
   );
 
   const selectedKarat =
-    Number(searchParams.karat || 0);
+    Number(
+      searchParams.karat || 0
+    );
 
   const selectedSort =
-    searchParams.sort || 'newest';
-
-  const validCategory =
-    selectedCategory === 'all' ||
-    categories.some(
-      (category) =>
-        category.value ===
-        selectedCategory
-    );
+    searchParams.sort ||
+    'newest';
 
   const filteredProducts =
     products
@@ -89,7 +88,6 @@ export default async function Shop({
         }
 
         if (
-          validCategory &&
           selectedCategory !==
             'all' &&
           product.category !==
@@ -98,16 +96,15 @@ export default async function Shop({
           return false;
         }
 
-        if (searchQuery) {
-          if (
-            !product.name
-              .toLowerCase()
-              .includes(
-                searchQuery.toLowerCase()
-              )
-          ) {
-            return false;
-          }
+        if (
+          searchQuery &&
+          !product.name
+            .toLowerCase()
+            .includes(
+              searchQuery.toLowerCase()
+            )
+        ) {
+          return false;
         }
 
         if (
@@ -136,8 +133,10 @@ export default async function Shop({
 
         return true;
       })
-      .map((product) => {
-        const calculatedPrice =
+      .map((product) => ({
+        ...product,
+
+        calculatedPrice:
           calculateProductPrice(
             product.weight,
             gold.price18k,
@@ -145,13 +144,8 @@ export default async function Shop({
             product.profitPercent,
             product.taxPercent,
             product.manualPrice
-          );
-
-        return {
-          ...product,
-          calculatedPrice,
-        };
-      })
+          ),
+      }))
       .filter((product) => {
         if (
           minPrice > 0 &&
@@ -178,7 +172,9 @@ export default async function Shop({
 
   sortedProducts.sort(
     (a, b) => {
-      switch (selectedSort) {
+      switch (
+        selectedSort
+      ) {
         case 'price-asc':
           return (
             a.calculatedPrice -
@@ -267,10 +263,13 @@ export default async function Shop({
       ...overrides,
     };
 
-    Object.entries(values).forEach(
+    Object.entries(
+      values
+    ).forEach(
       ([key, value]) => {
         if (
-          value !== undefined &&
+          value !==
+            undefined &&
           value !== ''
         ) {
           params.set(
@@ -289,474 +288,612 @@ export default async function Shop({
       : '/shop';
   }
 
-  const clearUrl =
-    '/shop';
-
   return (
-    <main className="container section">
-      {/* ==================================================
-          HEADER
-      ================================================== */}
+    <main className="shopPage container">
+      {/* Header */}
 
-      <div className="sectionHead">
+      <section className="shopHero">
         <div>
           <span className="eyebrow">
-            STORE
+            GOLD COLLECTION
           </span>
 
-          <h1
-            style={{
-              marginTop: '10px',
-            }}
-          >
-            فروشگاه طلا
+          <h1>
+            فروشگاه
+            <span>
+              طلا
+            </span>
           </h1>
 
-          <p
-            style={{
-              color:
-                'var(--text-soft)',
-              marginTop: '10px',
-              maxWidth: '650px',
-            }}
-          >
-            مجموعه‌ای از محصولات طلا با
-            قیمت‌گذاری شفاف، فیلترهای دقیق
-            و موجودی به‌روز.
+          <p>
+            محصولات را جستجو کن، فیلتر کن و
+            با قیمت لحظه‌ای طلا انتخاب کن.
           </p>
         </div>
 
-        <div className="livePrice">
-          ۱۸ عیار:{' '}
-          <b>
+        <div className="shopLivePrice">
+          <span>
+            طلای ۱۸ عیار
+          </span>
+
+          <strong>
             {gold.price18k.toLocaleString(
               'fa-IR'
-            )}
-          </b>{' '}
-          تومان
-        </div>
-      </div>
+            )}{' '}
+            تومان
+          </strong>
 
-      {/* ==================================================
-          FILTERS
-      ================================================== */}
+          {gold.change24h !==
+            null && (
+            <b
+              className={
+                gold.changeDirection ===
+                'down'
+                  ? 'marketDown'
+                  : 'marketUp'
+              }
+            >
+              {gold.changeDirection ===
+              'down'
+                ? '▼'
+                : '▲'}{' '}
+              {Math.abs(
+                gold.change24h
+              ).toLocaleString(
+                'fa-IR',
+                {
+                  maximumFractionDigits: 2,
+                }
+              )}
+              ٪
+            </b>
+          )}
+        </div>
+      </section>
+
+      {/* Search */}
 
       <form
         method="GET"
         action="/shop"
-        className="shopFilters"
+        className="shopSearch"
       >
-        {selectedCategory !==
-          'all' && (
-          <input
-            type="hidden"
-            name="category"
-            value={
-              selectedCategory
-            }
-          />
-        )}
+        <input
+          type="hidden"
+          name="category"
+          value={
+            selectedCategory !==
+            'all'
+              ? selectedCategory
+              : ''
+          }
+        />
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns:
-              'minmax(240px, 1fr) 180px 180px',
-            gap: '10px',
-          }}
-        >
+        <div className="shopSearchInput">
+          <span>
+            ⌕
+          </span>
+
           <input
             type="search"
             name="q"
-            defaultValue={
+            value={
               searchQuery
             }
-            placeholder="جستجوی نام محصول..."
-          />
-
-          <input
-            type="number"
-            name="minPrice"
-            min="0"
-            defaultValue={
-              minPrice > 0
-                ? minPrice
-                : ''
+            onChange={
+              undefined
             }
-            placeholder="حداقل قیمت"
-          />
-
-          <input
-            type="number"
-            name="maxPrice"
-            min="0"
-            defaultValue={
-              maxPrice > 0
-                ? maxPrice
-                : ''
-            }
-            placeholder="حداکثر قیمت"
+            placeholder="چه چیزی می‌خواهی پیدا کنی؟"
+            aria-label="جستجوی محصول"
           />
         </div>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns:
-              'repeat(3, minmax(150px, 1fr))',
-            gap: '10px',
-            marginTop: '10px',
-          }}
+        <button
+          type="submit"
+          className="button"
         >
-          <input
-            type="number"
-            name="minWeight"
-            min="0"
-            step="0.01"
-            defaultValue={
-              minWeight > 0
-                ? minWeight
-                : ''
-            }
-            placeholder="حداقل وزن (گرم)"
-          />
-
-          <input
-            type="number"
-            name="maxWeight"
-            min="0"
-            step="0.01"
-            defaultValue={
-              maxWeight > 0
-                ? maxWeight
-                : ''
-            }
-            placeholder="حداکثر وزن (گرم)"
-          />
-
-          <select
-            name="karat"
-            defaultValue={
-              selectedKarat > 0
-                ? String(
-                    selectedKarat
-                  )
-                : ''
-            }
-          >
-            <option value="">
-              همه عیارها
-            </option>
-
-            <option value="18">
-              ۱۸ عیار
-            </option>
-
-            <option value="21">
-              ۲۱ عیار
-            </option>
-
-            <option value="24">
-              ۲۴ عیار
-            </option>
-          </select>
-        </div>
-
-        <div
-          style={{
-            display: 'flex',
-            gap: '10px',
-            flexWrap: 'wrap',
-            marginTop: '14px',
-          }}
-        >
-          <button
-            type="submit"
-            className="button"
-          >
-            اعمال فیلتر
-          </button>
-
-          <Link
-            href={clearUrl}
-            className="button"
-          >
-            پاک کردن فیلتر
-          </Link>
-        </div>
+          جستجو
+        </button>
       </form>
 
-      {/* ==================================================
-          CATEGORIES
-      ================================================== */}
+      {/* Categories */}
 
-      <div className="shopCategories">
+      <div className="shopCategoryScroller">
         <Link
-          href={buildShopUrl({
-            category:
-              undefined,
-          })}
-          className="button"
+          href="/shop"
+          className={
+            selectedCategory ===
+            'all'
+              ? 'shopCategoryPill active'
+              : 'shopCategoryPill'
+          }
         >
           همه
         </Link>
 
         {categories.map(
-          (category) => {
-            const active =
-              selectedCategory ===
-              category.value;
-
-            return (
-              <Link
-                key={category.id}
-                href={buildShopUrl({
-                  category:
-                    category.value,
-                })}
-                className="button"
-                style={
-                  active
-                    ? {
-                        background:
-                          'linear-gradient(135deg, rgba(212,175,55,0.32), rgba(212,175,55,0.10))',
-                        borderColor:
-                          'var(--gold-light)',
-                        color:
-                          'var(--gold-light)',
-                      }
-                    : undefined
-                }
-              >
-                {category.label}
-              </Link>
-            );
-          }
+          (category) => (
+            <Link
+              key={category.id}
+              href={buildShopUrl({
+                category:
+                  category.value,
+              })}
+              className={
+                selectedCategory ===
+                category.value
+                  ? 'shopCategoryPill active'
+                  : 'shopCategoryPill'
+              }
+            >
+              {category.label}
+            </Link>
+          )
         )}
       </div>
 
-      {/* ==================================================
-          TOOLBAR
-      ================================================== */}
+      <div className="shopLayout">
+        {/* Filters */}
 
-      <div className="shopToolbar">
-        <div className="shopResultCount">
-          <strong>
-            {sortedProducts.length.toLocaleString(
-              'fa-IR'
-            )}
-          </strong>{' '}
-          محصول پیدا شد
-        </div>
+        <aside className="shopFiltersPanel">
+          <div className="shopFiltersHead">
+            <div>
+              <span className="eyebrow">
+                FILTER
+              </span>
 
-        <div className="shopToolbarSort">
-          <Link
-            href={buildShopUrl({
-              sort: 'newest',
-            })}
-            className="button"
-            style={
-              selectedSort ===
-              'newest'
-                ? {
-                    borderColor:
-                      'var(--gold-light)',
-                    color:
-                      'var(--gold-light)',
-                  }
-                : undefined
-            }
+              <h2>
+                فیلترها
+              </h2>
+            </div>
+
+            <Link href="/shop">
+              پاک کردن
+            </Link>
+          </div>
+
+          <form
+            method="GET"
+            action="/shop"
+            className="shopFiltersForm"
           >
-            جدیدترین
-          </Link>
-
-          <Link
-            href={buildShopUrl({
-              sort:
-                'price-asc',
-            })}
-            className="button"
-            style={
-              selectedSort ===
-              'price-asc'
-                ? {
-                    borderColor:
-                      'var(--gold-light)',
-                    color:
-                      'var(--gold-light)',
-                  }
-                : undefined
-            }
-          >
-            ارزان‌ترین
-          </Link>
-
-          <Link
-            href={buildShopUrl({
-              sort:
-                'price-desc',
-            })}
-            className="button"
-            style={
-              selectedSort ===
-              'price-desc'
-                ? {
-                    borderColor:
-                      'var(--gold-light)',
-                    color:
-                      'var(--gold-light)',
-                  }
-                : undefined
-            }
-          >
-            گران‌ترین
-          </Link>
-
-          <Link
-            href={buildShopUrl({
-              sort:
-                'weight-asc',
-            })}
-            className="button"
-            style={
-              selectedSort ===
-              'weight-asc'
-                ? {
-                    borderColor:
-                      'var(--gold-light)',
-                    color:
-                      'var(--gold-light)',
-                  }
-                : undefined
-            }
-          >
-            سبک‌ترین
-          </Link>
-
-          <Link
-            href={buildShopUrl({
-              sort:
-                'weight-desc',
-            })}
-            className="button"
-            style={
-              selectedSort ===
-              'weight-desc'
-                ? {
-                    borderColor:
-                      'var(--gold-light)',
-                    color:
-                      'var(--gold-light)',
-                  }
-                : undefined
-            }
-          >
-            سنگین‌ترین
-          </Link>
-
-          <Link
-            href={buildShopUrl({
-              sort:
-                'name-asc',
-            })}
-            className="button"
-            style={
-              selectedSort ===
-              'name-asc'
-                ? {
-                    borderColor:
-                      'var(--gold-light)',
-                    color:
-                      'var(--gold-light)',
-                  }
-                : undefined
-            }
-          >
-            الفبا
-          </Link>
-        </div>
-      </div>
-
-      {/* ==================================================
-          PRODUCTS
-      ================================================== */}
-
-      {sortedProducts.length ===
-      0 ? (
-        <div
-          className="product"
-          style={{
-            padding:
-              '38px',
-            textAlign:
-              'center',
-          }}
-        >
-          <span className="eyebrow">
-            NO PRODUCTS
-          </span>
-
-          <h2
-            style={{
-              marginTop: '12px',
-            }}
-          >
-            محصولی با این مشخصات پیدا نشد
-          </h2>
-
-          <p
-            style={{
-              color:
-                'var(--text-soft)',
-              marginTop:
-                '10px',
-            }}
-          >
-            فیلترها را تغییر بده یا همه
-            محصولات را دوباره مشاهده کن.
-          </p>
-
-          <Link
-            href="/shop"
-            className="button"
-            style={{
-              marginTop: '10px',
-            }}
-          >
-            نمایش همه محصولات
-          </Link>
-        </div>
-      ) : (
-        <div className="products">
-          {sortedProducts.map(
-            (p) => (
-              <ProductCard
-                key={p.id}
-                product={{
-                  id: p.id,
-                  name: p.name,
-                  category:
-                    p.category,
-                  weight:
-                    p.weight,
-                  karat:
-                    p.karat,
-                  laborPercent:
-                    p.laborPercent,
-                  profitPercent:
-                    p.profitPercent,
-                  stock:
-                    p.stock,
-                  image:
-                    p.image,
-                  price:
-                    p.calculatedPrice,
-                }}
+            {selectedCategory !==
+              'all' && (
+              <input
+                type="hidden"
+                name="category"
+                value={
+                  selectedCategory
+                }
               />
-            )
+            )}
+
+            <label>
+              جستجو
+
+              <input
+                type="search"
+                name="q"
+                defaultValue={
+                  searchQuery
+                }
+                placeholder="نام محصول..."
+              />
+            </label>
+
+            <div className="shopFilterBlock">
+              <span>
+                قیمت
+              </span>
+
+              <div className="shopTwoInputs">
+                <input
+                  type="number"
+                  name="minPrice"
+                  min="0"
+                  defaultValue={
+                    minPrice > 0
+                      ? minPrice
+                      : ''
+                  }
+                  placeholder="از"
+                />
+
+                <input
+                  type="number"
+                  name="maxPrice"
+                  min="0"
+                  defaultValue={
+                    maxPrice > 0
+                      ? maxPrice
+                      : ''
+                  }
+                  placeholder="تا"
+                />
+              </div>
+
+              <small>
+                تومان
+              </small>
+            </div>
+
+            <div className="shopFilterBlock">
+              <span>
+                وزن
+              </span>
+
+              <div className="shopTwoInputs">
+                <input
+                  type="number"
+                  name="minWeight"
+                  min="0"
+                  step="0.01"
+                  defaultValue={
+                    minWeight > 0
+                      ? minWeight
+                      : ''
+                  }
+                  placeholder="از"
+                />
+
+                <input
+                  type="number"
+                  name="maxWeight"
+                  min="0"
+                  step="0.01"
+                  defaultValue={
+                    maxWeight > 0
+                      ? maxWeight
+                      : ''
+                  }
+                  placeholder="تا"
+                />
+              </div>
+
+              <small>
+                گرم
+              </small>
+            </div>
+
+            <div className="shopFilterBlock">
+              <span>
+                عیار
+              </span>
+
+              <div className="karatOptions">
+                {[
+                  {
+                    value: '',
+                    label:
+                      'همه',
+                  },
+                  {
+                    value:
+                      '18',
+                    label:
+                      '۱۸',
+                  },
+                  {
+                    value:
+                      '21',
+                    label:
+                      '۲۱',
+                  },
+                  {
+                    value:
+                      '24',
+                    label:
+                      '۲۴',
+                  },
+                ].map(
+                  (option) => (
+                    <label
+                      key={
+                        option.value
+                      }
+                      className="karatOption"
+                    >
+                      <input
+                        type="radio"
+                        name="karat"
+                        value={
+                          option.value
+                        }
+                        defaultChecked={
+                          String(
+                            selectedKarat ||
+                              ''
+                          ) ===
+                          option.value
+                        }
+                      />
+
+                      <span>
+                        {
+                          option.label
+                        }
+                      </span>
+                    </label>
+                  )
+                )}
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="button shopApplyFilter"
+            >
+              اعمال فیلتر
+            </button>
+          </form>
+        </aside>
+
+        {/* Products */}
+
+        <section className="shopResults">
+          <div className="shopResultsToolbar">
+            <div>
+              <strong>
+                {sortedProducts.length.toLocaleString(
+                  'fa-IR'
+                )}
+              </strong>
+
+              <span>
+                محصول
+              </span>
+            </div>
+
+            <div className="shopSort">
+              <label>
+                مرتب‌سازی
+
+                <select
+                  name="sort"
+                  defaultValue={
+                    selectedSort
+                  }
+                  onChange={
+                    undefined
+                  }
+                >
+                  <option value="newest">
+                    جدیدترین
+                  </option>
+
+                  <option value="price-asc">
+                    ارزان‌ترین
+                  </option>
+
+                  <option value="price-desc">
+                    گران‌ترین
+                  </option>
+
+                  <option value="weight-asc">
+                    سبک‌ترین
+                  </option>
+
+                  <option value="weight-desc">
+                    سنگین‌ترین
+                  </option>
+
+                  <option value="name-asc">
+                    الفبایی
+                  </option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          {/* mobile filter */}
+
+          <details className="mobileShopFilters">
+            <summary>
+              <span>
+                فیلتر و مرتب‌سازی
+              </span>
+
+              <span>
+                + 
+              </span>
+            </summary>
+
+            <form
+              method="GET"
+              action="/shop"
+              className="mobileShopFilterContent"
+            >
+              <input
+                type="hidden"
+                name="category"
+                value={
+                  selectedCategory !==
+                  'all'
+                    ? selectedCategory
+                    : ''
+                }
+              />
+
+              <input
+                type="search"
+                name="q"
+                defaultValue={
+                  searchQuery
+                }
+                placeholder="جستجوی محصول..."
+              />
+
+              <div className="shopTwoInputs">
+                <input
+                  type="number"
+                  name="minPrice"
+                  defaultValue={
+                    minPrice > 0
+                      ? minPrice
+                      : ''
+                  }
+                  placeholder="حداقل قیمت"
+                />
+
+                <input
+                  type="number"
+                  name="maxPrice"
+                  defaultValue={
+                    maxPrice > 0
+                      ? maxPrice
+                      : ''
+                  }
+                  placeholder="حداکثر قیمت"
+                />
+              </div>
+
+              <div className="shopTwoInputs">
+                <input
+                  type="number"
+                  name="minWeight"
+                  defaultValue={
+                    minWeight > 0
+                      ? minWeight
+                      : ''
+                  }
+                  placeholder="حداقل وزن"
+                />
+
+                <input
+                  type="number"
+                  name="maxWeight"
+                  defaultValue={
+                    maxWeight > 0
+                      ? maxWeight
+                      : ''
+                  }
+                  placeholder="حداکثر وزن"
+                />
+              </div>
+
+              <select
+                name="karat"
+                defaultValue={
+                  selectedKarat
+                    ? String(
+                        selectedKarat
+                      )
+                    : ''
+                }
+              >
+                <option value="">
+                  همه عیارها
+                </option>
+
+                <option value="18">
+                  ۱۸ عیار
+                </option>
+
+                <option value="21">
+                  ۲۱ عیار
+                </option>
+
+                <option value="24">
+                  ۲۴ عیار
+                </option>
+              </select>
+
+              <select
+                name="sort"
+                defaultValue={
+                  selectedSort
+                }
+              >
+                <option value="newest">
+                  جدیدترین
+                </option>
+
+                <option value="price-asc">
+                  ارزان‌ترین
+                </option>
+
+                <option value="price-desc">
+                  گران‌ترین
+                </option>
+
+                <option value="weight-asc">
+                  سبک‌ترین
+                </option>
+
+                <option value="weight-desc">
+                  سنگین‌ترین
+                </option>
+              </select>
+
+              <button
+                type="submit"
+                className="button"
+              >
+                اعمال
+              </button>
+            </form>
+          </details>
+
+          {sortedProducts.length ===
+          0 ? (
+            <div className="shopNoResults">
+              <span className="eyebrow">
+                NO RESULTS
+              </span>
+
+              <h2>
+                محصولی پیدا نشد
+              </h2>
+
+              <p>
+                فیلترها را تغییر بده یا
+                جستجوی دیگری انجام بده.
+              </p>
+
+              <Link
+                href="/shop"
+                className="button"
+              >
+                پاک کردن فیلترها
+              </Link>
+            </div>
+          ) : (
+            <div className="products shopProducts">
+              {sortedProducts.map(
+                (product) => (
+                  <ProductCard
+                    key={
+                      product.id
+                    }
+                    product={{
+                      id:
+                        product.id,
+                      name:
+                        product.name,
+                      category:
+                        product.category,
+                      weight:
+                        product.weight,
+                      karat:
+                        product.karat,
+                      laborPercent:
+                        product.laborPercent,
+                      profitPercent:
+                        product.profitPercent,
+                      stock:
+                        product.stock,
+                      image:
+                        product.image,
+                      price:
+                        product.calculatedPrice,
+                    }}
+                  />
+                )
+              )}
+            </div>
           )}
-        </div>
-      )}
+        </section>
+      </div>
     </main>
   );
 }
