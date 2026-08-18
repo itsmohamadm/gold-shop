@@ -33,9 +33,7 @@ export default async function ProductPage({
       where: {
         id,
       },
-      include: {
-        // اطلاعات اضافی در صورت وجود رابطه
-      },
+      include: {},
     });
 
   if (!product || !product.active) {
@@ -60,81 +58,58 @@ export default async function ProductPage({
 
   return (
     <main className="container section productDetailPage">
-      {/* ==================================================
-          BACK
-      ================================================== */}
+      {/* BACK */}
 
       <Link
         href="/shop"
         className="productBack"
       >
-        <span>→</span>
+        <span>←</span>
         بازگشت به فروشگاه
       </Link>
 
-      {/* ==================================================
-          PRODUCT MAIN
-      ================================================== */}
+      {/* PRODUCT MAIN */}
 
       <section className="productDetail">
-        {/* تصویر */}
-        <div className="productDetailVisual">
-          <div className="productDetailImage">
-            {product.image ? (
-              <img
-                src={product.image}
-                alt={product.name}
-              />
-            ) : (
-              <div className="productDetailPlaceholder">
-                <span>
-                  {product.karat}K
-                </span>
+        {/* IMAGE */}
 
-                <small>
-                  GOLD
-                </small>
-              </div>
-            )}
-
-            <div className="productDetailImageBadge">
-              {isOutOfStock
-                ? 'ناموجود'
-                : 'موجود'}
+        <div className="productImagePanel">
+          {product.image ? (
+            <img
+              src={product.image}
+              alt={product.name}
+              className="productDetailImage"
+            />
+          ) : (
+            <div className="productImagePlaceholder">
+              بدون تصویر
             </div>
-
-            <div className="productDetailImageKarat">
-              {product.karat.toLocaleString(
-                'fa-IR'
-              )}{' '}
-              عیار
-            </div>
-          </div>
+          )}
         </div>
 
-        {/* اطلاعات محصول */}
-        <div className="productDetailInfo">
-          <div className="productDetailCategory">
-            <span className="eyebrow">
-              GOLD PRODUCT
-            </span>
+        {/* INFO */}
 
-            <span>
-              {product.category}
-            </span>
-          </div>
+        <div className="productInfo">
+          <span className="eyebrow">
+            GOLD COLLECTION
+          </span>
 
-          <h1 className="productDetailTitle">
+          <h1>
             {product.name}
           </h1>
 
-          <p className="productDetailIntro">
-            یک انتخاب اصیل برای کسانی که
-            کیفیت، ظرافت و شفافیت قیمت را
-            مهم می‌دانند.
-          </p>
+          <div className="productMeta">
+            <span>
+              {product.category}
+            </span>
 
-          {/* مشخصات */}
+            <span>
+              کد محصول: {product.id}
+            </span>
+          </div>
+
+          {/* SPECS */}
+
           <div className="productSpecs">
             <div className="productSpec">
               <small>
@@ -211,7 +186,8 @@ export default async function ProductPage({
             </div>
           </div>
 
-          {/* قیمت */}
+          {/* PRICE */}
+
           <div className="productPricePanel">
             <div className="productGoldPrice">
               <div>
@@ -248,13 +224,13 @@ export default async function ProductPage({
             </div>
 
             <small className="productPriceNote">
-              قیمت بر اساس نرخ فعلی طلا،
-              وزن و هزینه‌های محصول محاسبه شده
-              است.
+              قیمت بر اساس نرخ لحظه‌ای طلا،
+              وزن و هزینه‌های محصول محاسبه شده است.
             </small>
           </div>
 
-          {/* عملیات */}
+          {/* ACTIONS */}
+
           <div className="productActions">
             <AddToCartButton
               product={{
@@ -277,52 +253,69 @@ export default async function ProductPage({
             />
           </div>
 
-          {/* اطلاعات خرید */}
-          <div className="productTrust">
-            <div>
-              <span>
-                ✓
+          {/* SHOPPING BENEFITS */}
+
+          <div className="productTrust productBenefits">
+            <div className="productBenefit">
+              <span className="productBenefitIcon">
+                ↩
               </span>
 
               <div>
                 <strong>
-                  قیمت شفاف
+                  ضمانت بازگشت
                 </strong>
 
                 <small>
-                  محاسبه بر اساس نرخ روز طلا
+                  خرید با خیال راحت
                 </small>
               </div>
             </div>
 
-            <div>
-              <span>
+            <div className="productBenefit">
+              <span className="productBenefitIcon">
                 ✓
               </span>
 
               <div>
                 <strong>
-                  موجودی واقعی
+                  خرید و پرداخت امن
                 </strong>
 
                 <small>
-                  کنترل موجودی قبل از ثبت سفارش
+                  پرداخت مطمئن و امن
                 </small>
               </div>
             </div>
 
-            <div>
-              <span>
-                ✓
+            <div className="productBenefit">
+              <span className="productBenefitIcon">
+                ⚡
               </span>
 
               <div>
                 <strong>
-                  خرید امن
+                  تحویل اکسپرس
                 </strong>
 
                 <small>
-                  سفارش به نام حساب شما ثبت می‌شود
+                  ارسال سریع سفارش
+                </small>
+              </div>
+            </div>
+
+            <div className="productBenefit">
+              <span className="productBenefitIcon">
+                ◆
+              </span>
+
+              <div>
+                <strong>
+                  ضمانت اصل بودن کالا
+                </strong>
+
+                <small>
+                  اصالت محصول تضمین می‌شود
                 </small>
               </div>
             </div>
